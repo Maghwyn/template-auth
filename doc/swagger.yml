@@ -1,0 +1,399 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: Auth API
+basePath: /api
+schemes:
+  - http
+  - https
+paths:
+  /auth:
+    post:
+      tags:
+        - auth
+      summary: Check if the user is authenticated
+      security:
+        - Jwt: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      summary: User signup
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOAuthSignup'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      summary: User signin
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOAuthEmail'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: User logout
+      security:
+        - Jwt: []
+      responses:
+        201:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/ask-activation-token:
+    post:
+      tags:
+        - auth
+      summary: Request activation token
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOAuthEmail'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/ask-reset-token:
+    post:
+      tags:
+        - auth
+      summary: Request reset token
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOAuthEmail'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/activate:
+    post:
+      tags:
+        - auth
+      summary: Activate user account
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOActivationToken'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /auth/reset-password:
+    post:
+      tags:
+        - auth
+      summary: Reset user password
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOResetPassword'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get user information
+      security:
+        - Jwt: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+
+  /stripe/product:
+    get:
+      tags:
+        - stripe
+      summary: Retrieve products
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              products:
+                type: array
+                items:
+                  $ref: '#/definitions/Product'
+
+  /stripe/session:
+    post:
+      tags:
+        - stripe
+      summary: Open a Stripe purchase session
+      security:
+        - Jwt: []
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/DTOPurchasePayload'
+      responses:
+        201:
+          description: Created
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              id:
+                type: string
+
+  /stripe/paid-invoice:
+    get:
+      tags:
+        - stripe
+      summary: Retrieve a paid invoice
+      security:
+        - Jwt: []
+      parameters:
+        - in: query
+          name: session
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              paidInvoice:
+                $ref: '#/definitions/Invoice'
+
+  /stripe/invoices:
+    get:
+      tags:
+        - stripe
+      summary: Retrieve user invoices
+      security:
+        - Jwt: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              invoices:
+                type: array
+                items:
+                  $ref: '#/definitions/Invoice'
+
+  /servers:
+    get:
+      tags:
+        - servers
+      summary: Get all servers
+      security:
+        - Jwt: []
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+              servers:
+                type: array
+                items:
+                  $ref: '#/definitions/Server'
+
+definitions:
+  DTOActivationToken:
+    type: object
+    properties:
+      token:
+        type: string
+  DTOAuthEmail:
+    type: object
+    properties:
+      email:
+        type: string
+  DTOAuthSignup:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  DTOResetPassword:
+    type: object
+    properties:
+      token:
+        type: string
+      password:
+        type: string
+  DTOPurchasePayload:
+    type: object
+    properties:
+      productId:
+        type: string
+      recurring:
+        type: boolean
+      intervalCount:
+        type: number
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      percs:
+        type: array
+        items:
+          type: string
+      index:
+        type: number
+      tiers:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            monthInterval:
+              type: number
+            basePrice:
+              type: number
+            targetPrice:
+              type: number
+  Invoice:
+    type: object
+    properties:
+      invoiceId:
+        type: string
+      chargeId:
+        type: string
+      customerId:
+        type: string
+      dueAmount:
+        type: number
+      paidAmount:
+        type: number
+      tierIndex:
+        type: string
+      paymentFinalizedAt:
+        type: number
+      paymentPaidAt:
+        type: number
+      createdAt:
+        type: number
+      invoiceUrl:
+        type: string
+      invoicePdf:
+        type: string
+      status:
+        type: string
+  Server:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      pteroUrl:
+        type: string
+      createdAt:
+        type: string
+
+securityDefinitions:
+  Jwt:
+    type: apiKey
+    in: header
+    name: Authorization

@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo
+    container_name: random-example
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - 27007:27017
+    volumes:
+      - ./data:/data/db

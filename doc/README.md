@@ -1,0 +1,1 @@
+The documentation will need to be updated, it's missing a few fix regarding the return status, payload and endpoints
